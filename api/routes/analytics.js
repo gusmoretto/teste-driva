@@ -10,7 +10,12 @@ router.get('/overview', async (req, res) => {
             SELECT 
                 COUNT(*) as total_jobs,
                 COUNT(*) FILTER (WHERE processamento_sucesso = true) as total_sucesso,
-                AVG(duracao_processamento_minutos)::NUMERIC(10,2) as tempo_medio
+                ROUND(COUNT(*) FILTER (WHERE processamento_sucesso = true) * 100.0 / NULLIF(COUNT(*), 0), 2) as percentual_sucesso,
+                AVG(duracao_processamento_minutos)::NUMERIC(10,2) as tempo_medio,
+                COUNT(*) FILTER (WHERE categoria_tamanho_job = 'PEQUENO') as cat_pequeno,
+                COUNT(*) FILTER (WHERE categoria_tamanho_job = 'MEDIO') as cat_medio,
+                COUNT(*) FILTER (WHERE categoria_tamanho_job = 'GRANDE') as cat_grande,
+                COUNT(*) FILTER (WHERE categoria_tamanho_job = 'MUITO_GRANDE') as cat_muito_grande
             FROM gold_enrichments
         `;
         const result = await pool.query(query);
@@ -20,12 +25,64 @@ router.get('/overview', async (req, res) => {
     }
 });
 
-// Rota para a lista/tabela do Dashboard
+// Rota para a lista/tabela do Dashboard com paginação e filtros
 router.get('/enrichments', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM gold_enrichments ORDER BY data_atualizacao_dw DESC LIMIT 50');
-        res.json(result.rows);
+        const page = parseInt(req.query.page) || 1;
+        const limit = Math.min(parseInt(req.query.limit) || 50, 100);
+        const offset = (page - 1) * limit;
+
+        // Filtros opcionais
+        const { id_workspace, status, data_inicio, data_fim } = req.query;
+        
+        let whereClause = [];
+        let params = [];
+        let paramIndex = 1;
+
+        if (id_workspace) {
+            whereClause.push(`id_workspace = $${paramIndex++}`);
+            params.push(id_workspace);
+        }
+        if (status) {
+            whereClause.push(`status_processamento = $${paramIndex++}`);
+            params.push(status);
+        }
+        if (data_inicio) {
+            whereClause.push(`data_criacao >= $${paramIndex++}`);
+            params.push(data_inicio);
+        }
+        if (data_fim) {
+            whereClause.push(`data_criacao <= $${paramIndex++}`);
+            params.push(data_fim);
+        }
+
+        const whereSQL = whereClause.length > 0 ? `WHERE ${whereClause.join(' AND ')}` : '';
+
+        // Query de contagem
+        const countQuery = `SELECT COUNT(*) FROM gold_enrichments ${whereSQL}`;
+        const countResult = await pool.query(countQuery, params);
+        const totalItems = parseInt(countResult.rows[0].count);
+
+        // Query de dados
+        const dataQuery = `
+            SELECT * FROM gold_enrichments 
+            ${whereSQL} 
+            ORDER BY data_atualizacao_dw DESC 
+            LIMIT $${paramIndex++} OFFSET $${paramIndex++}
+        `;
+        const dataResult = await pool.query(dataQuery, [...params, limit, offset]);
+
+        res.json({
+            meta: {
+                current_page: page,
+                items_per_page: limit,
+                total_items: totalItems,
+                total_pages: Math.ceil(totalItems / limit)
+            },
+            data: dataResult.rows
+        });
     } catch (err) {
+        console.error('Erro ao listar dados:', err);
         res.status(500).json({ error: 'Erro ao listar dados' });
     }
 });
