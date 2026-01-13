@@ -21,17 +21,25 @@ async function seedDatabase() {
                 const total_contacts = faker.number.int({min: 5, max: 5000});
                 const contact_type = faker.helpers.arrayElement(['PERSON', 'COMPANY']);
 
-                const status = faker.helpers.arrayElement([
-                    {weight: 80, item: 'COMPLETED'},
-                    {weight: 10, item: 'PROCESSING'},
-                    {weight: 10, item: 'FAILED'},
-                    {weight: 5, item: 'CANCELED'}                
-                ]);
+                const randomPercent = Math.random() * 100; // Gera número entre 0 e 100
+                let status;
 
-                const created_at = faker.date.past().toISOString();
-                const updated_at = faker.date.recent().toISOString();
+                if (randomPercent < 60) {
+                    status = 'COMPLETED'; // 60% de chance (0 a 59.99)
+                } else if (randomPercent < 75) {
+                    status = 'PROCESSING'; // 15% de chance (60 a 74.99)
+                } else if (randomPercent < 90) {
+                    status = 'FAILED';     // 15% de chance (75 a 89.99)
+                } else {
+                    status = 'CANCELED';   // 10% de chance (resto)
+                }
 
-                values.push(`('${id}', '${id_workspace}', '${workspace_name}', ${total_contacts}, '${contact_type}', '${status.item}', '${created_at}', '${updated_at}')`);
+               const createdAt = faker.date.recent({ days: 60 }); // Data nos últimos 60 dias
+
+                 const randomMinutes = Math.floor(Math.random() * 120) + 1; 
+                const updatedAt = new Date(createdAt.getTime() + randomMinutes * 60000);
+
+                values.push(`('${id}', '${id_workspace}', '${workspace_name}', ${total_contacts}, '${contact_type}', '${status}', '${createdAt.toISOString()}', '${updatedAt.toISOString()}')`);
             }
             const query = `INSERT INTO api_enrichments_seed (id, id_workspace, workspace_name,  total_contacts, contact_type, status, created_at, updated_at) VALUES ${values.join(', ')};`;
             await client.query(query);

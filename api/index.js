@@ -11,6 +11,7 @@ app.use(express.json());
 // --- IMPORTA AS ROTAS ---
 const sourceRoutes = require('./routes/source');
 const analyticsRoutes = require('./routes/analytics');
+const path = require('path');
 
 // --- USA AS ROTAS ---
 // Rota da Fonte (Simulada)
@@ -19,11 +20,10 @@ app.use('/people/v1', sourceRoutes);
 // Rota do Dashboard (Analytics)
 app.use('/analytics', analyticsRoutes);
 
-// Rota base para teste
-app.get('/', (req, res) => {
-    res.json({ status: 'Driva API Online' });
-});
 
-app.listen(port, () => {
+// Front-end
+app.use(express.static(path.join(__dirname, '../frontend')));
+
+app.listen(port,'0.0.0.0', () => {
     console.log(`API rodando na porta ${port}`);
 });
