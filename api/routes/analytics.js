@@ -2,6 +2,17 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 
+// Middleware de autenticação para todas as rotas de analytics
+router.use((req, res, next) => {
+    const authHeader = req.headers.authorization;
+    const requiredKey = 'Bearer ' + (process.env.API_SECRET_KEY || 'driva_test_key_abc123xyz789');
+
+    if (!authHeader || authHeader !== requiredKey) {
+        return res.status(401).json({ error: 'Unauthorized: Acesso restrito ao Dashboard' });
+    }
+    next();
+});
+
 // Rota para os KPIs do topo do Dashboard
 router.get('/overview', async (req, res) => {
     try {
