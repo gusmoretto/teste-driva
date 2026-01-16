@@ -228,14 +228,30 @@
         Chart.defaults.scale.grid.color = '#f1f5f9';
         
         const API_URL = 'http://localhost:3000/analytics';
+        // Simulação de chave de API no frontend (Demo)
+        const AUTH_HEADERS = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer driva_test_key_abc123xyz789'
+        };
+
         let paginaAtual = 1;
         let totalPaginas = 1;
         let kpiData = null;
 
+        // Wrapper para Fetch com Autenticação
+        async function fetchAPI(url) {
+            const res = await fetch(url, { headers: AUTH_HEADERS });
+            if (res.status === 401) {
+                console.error("Erro de Autenticação: API Key inválida");
+                alert("Erro de autenticação. Verifique o console.");
+            }
+            return res;
+        }
+
         // 1. Carregar KPIs
         async function loadKPIs() {
             try {
-                const res = await fetch(`${API_URL}/overview`);
+                const res = await fetchAPI(`${API_URL}/overview`);
                 kpiData = await res.json();
                 
                 document.getElementById('kpi-total').innerText = kpiData.total_jobs;
@@ -300,7 +316,7 @@
         // 3. Gráfico de Distribuição por Status
         async function loadChartStatus() {
             try {
-                const res = await fetch(`${API_URL}/enrichments?limit=1000`);
+                const res = await fetchAPI(`${API_URL}/enrichments?limit=1000`);
                 const response = await res.json();
                 const data = response.data || response;
                 
@@ -359,7 +375,7 @@
                 let url = `${API_URL}/enrichments?page=${paginaAtual}&limit=${limit}`;
                 if (status) url += `&status=${status}`;
                 
-                const res = await fetch(url);
+                const res = await fetchAPI(url);
                 const response = await res.json();
                 const data = response.data || response;
                 
@@ -418,7 +434,7 @@
         // 5. Carregar Gráfico Top Clientes
         async function loadChart() {
             try {
-                const res = await fetch(`${API_URL}/workspaces/top`);
+                const res = await fetchAPI(`${API_URL}/workspaces/top`);
                 const data = await res.json();
 
                 const ctx = document.getElementById('chartTopClientes').getContext('2d');
