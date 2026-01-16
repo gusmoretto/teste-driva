@@ -4,97 +4,399 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Driva - Dashboard de Enriquecimento</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        driva: {
+                            dark: '#0f172a',    // Slate 900
+                            primary: '#4f46e5', // Indigo 600
+                            accent: '#8b5cf6',  // Violet 500
+                            surface: '#ffffff',
+                            bg: '#f8fafc',      // Slate 50
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-gray-100 p-8">
+<body class="bg-driva-bg text-slate-600 font-sans antialiased selection:bg-driva-primary selection:text-white">
 
-    <div class="max-w-7xl mx-auto">
-        <header class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-800">🚀 Monitoramento de Enriquecimentos</h1>
-            <p class="text-gray-600">Status em tempo real da ingestão de dados</p>
-        </header>
+    <div class="bg-slate-900 text-white pb-32">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex items-center gap-4">
+                    <!-- Logo Driva -->
+                    <div class="h-12 w-auto">
+                        <svg width="100%" height="100%" viewBox="0 0 544 126" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-full w-auto">
+                            <g clip-path="url(#clip0_254_501)">
+                            <g opacity="0.9">
+                            <path d="M94.6522 116.676C93.3788 119.382 90.1299 120.553 87.4007 119.289C86.5487 118.895 85.8511 118.315 85.3268 117.617L85.1442 117.36L71.0766 97.4545L63.5208 86.7669L58.1699 79.1923L57.9452 78.8787L56.2412 76.4677L33.8359 44.7699L86.1554 1.27487L86.2397 1.20465C87.8126 -0.0593352 90.041 -0.401078 91.9978 0.502434C93.964 1.41063 95.1297 3.33001 95.1578 5.3477V73.0924V77.4462V84.0282V114.055C95.1578 114.074 95.1578 114.102 95.1578 114.125V114.682V114.696C95.1203 115.366 94.9565 116.035 94.6522 116.676Z" fill="#ffffff"/>
+                            </g>
+                            <g opacity="0.7">
+                            <path d="M57.948 78.8779C57.4237 78.1897 56.7262 77.6139 55.8835 77.2254C55.0502 76.8415 54.1655 76.6776 53.3041 76.7198H53.276H53.2666C53.1355 76.7245 53.0138 76.7385 52.8827 76.7526H52.864L43.5948 77.5577L30.4728 78.6953L6.17628 80.802H6.16224L5.73623 80.8394H5.73155C4.87953 80.8769 3.99942 80.7177 3.17081 80.3338C0.422824 79.0652 -0.766255 75.8303 0.516452 73.1057C0.8067 72.4878 1.19526 71.9541 1.65872 71.5094L1.66808 71.5L2.28135 70.985L25.3701 51.7912L30.4635 47.5592L33.8294 44.7598L56.2346 76.4576L57.9387 78.8685L57.948 78.8779Z" fill="#ffffff"/>
+                            </g>
+                            <path d="M60.2285 105.808C59.9102 106.487 59.4654 107.067 58.9364 107.54L58.7164 107.723L58.7024 107.737L39.6303 123.588L39.2745 123.883C37.7109 125.086 35.534 125.4 33.6147 124.515C31.7327 123.644 30.5858 121.851 30.4688 119.932V119.894V119.646V119.295V94.7223V94.4367V94.3993V94.3852C30.4968 93.683 30.6607 92.9714 30.979 92.2973C31.7842 90.5886 33.3759 89.4885 35.1314 89.231H35.1408L35.8056 89.1701L47.6074 88.1449L47.8742 88.1262C48.7544 88.07 49.6579 88.2292 50.5146 88.6224C51.3713 89.0157 52.0735 89.6055 52.5978 90.3077L52.7523 90.5231L59.5497 100.139L59.5591 100.157L59.9336 100.691L59.9617 100.729C60.8652 102.222 61.029 104.118 60.2285 105.817V105.808Z" fill="#F07F2D"/>
+                            <path d="M206.387 41.7575C203.156 38.4197 199.247 35.8496 194.65 34.0426C190.053 32.2355 184.843 31.332 179.024 31.332H146.82V104.311H179.024C184.847 104.311 190.077 103.407 194.706 101.6C199.336 99.793 203.245 97.2557 206.443 93.9881C209.636 90.7204 212.075 86.863 213.755 82.4156C215.44 77.9683 216.283 73.1043 216.283 67.819C216.283 62.5337 215.44 57.7961 213.755 53.3815C212.07 48.9669 209.617 45.0907 206.387 41.7575ZM202.81 78.2492C201.686 81.3763 200.057 84.0728 197.918 86.3293C195.779 88.5904 193.077 90.3413 189.814 91.5959C186.551 92.8458 182.778 93.4731 178.499 93.4731H158.187V42.1789H178.499C182.778 42.1789 186.533 42.8062 189.758 44.0561C192.984 45.3061 195.685 47.0803 197.862 49.3742C200.034 51.6681 201.686 54.3786 202.81 57.5058C203.934 60.633 204.495 64.0738 204.495 67.8283C204.495 71.5828 203.934 75.1267 202.81 78.2538V78.2492Z" fill="#ffffff"/>
+                            <path d="M288.006 73.9743C291.69 71.891 294.635 69.1103 296.844 65.632C299.054 62.1584 300.159 58.3711 300.159 54.2702C300.159 49.9633 299.105 46.0683 297.003 42.5947C294.897 39.1211 292.055 36.3731 288.478 34.3601C284.902 32.3471 280.969 31.3359 276.691 31.3359H240.695V104.315H252.062V77.1014H272.178L289.738 104.315L303.735 104.417L284.775 75.4864C285.88 75.065 286.957 74.5641 288.001 73.9743H288.006ZM252.066 42.1734H274.275C276.939 42.1734 279.345 42.693 281.484 43.737C283.624 44.781 285.309 46.2041 286.536 48.0111C287.762 49.8182 288.376 51.8686 288.376 54.1625C288.376 56.4564 287.832 58.4226 286.746 60.2624C285.656 62.1069 284.186 63.5628 282.327 64.6395C280.469 65.7162 278.381 66.2546 276.063 66.2546H252.066V42.1687V42.1734Z" fill="#ffffff"/>
+                            <path d="M327.844 42.0712H342.679V93.5761H327.844V104.315H368.886V93.5761H354.046V42.0712H368.886V31.332H327.844V42.0712Z" fill="#ffffff"/>
+                            <path d="M432.977 75.4349C431.994 77.8692 431.048 80.2848 430.135 82.6817C429.223 85.0786 428.347 87.3912 427.504 89.6149C427.275 90.2234 427.055 90.8086 426.84 91.3844C426.779 91.23 426.723 91.0755 426.662 90.9163C426.03 89.2825 425.346 87.5784 424.611 85.8089C423.876 84.0393 423.118 82.265 422.35 80.4908C421.578 78.7165 420.876 76.9984 420.244 75.3319L401.827 31.3359H388.883L420.141 104.315H432.242L463.392 31.3359H450.027L432.977 75.4349Z" fill="#ffffff"/>
+                            <path d="M531.172 104.315H543.484L512.226 31.3359H499.914L468.445 104.315H480.125L487.775 86.5907H523.546L531.167 104.315H531.172ZM492.461 75.7485L500.021 58.2353C500.513 56.9854 501.075 55.5763 501.707 54.0127C502.339 52.4491 502.985 50.7966 503.654 49.0598C504.319 47.323 504.951 45.6189 505.55 43.9523C505.625 43.7464 505.695 43.5497 505.766 43.3531C505.784 43.3999 505.798 43.4421 505.812 43.4842C506.444 45.1882 507.109 46.9765 507.811 48.8538C508.514 50.731 509.16 52.4866 509.759 54.1204C510.353 55.7542 510.826 56.9854 511.182 57.8234L518.892 75.7579H492.466L492.461 75.7485Z" fill="#ffffff"/>
+                            </g>
+                            <defs>
+                            <clipPath id="clip0_254_501">
+                            <rect width="543.489" height="125.027" fill="white"/>
+                            </clipPath>
+                            </defs>
+                        </svg>
+                    </div>
+                    <div class="h-8 w-px bg-slate-700 mx-2"></div>
+                    <div>
+                        <h1 class="text-xl font-bold tracking-tight text-white mb-0.5">Monitor de Enriquecimentos</h1>
+                        <p class="text-slate-400 text-sm">Visão geral da ingestão de dados em tempo real</p>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center gap-2 bg-slate-800/50 backdrop-blur-sm px-4 py-2 rounded-full border border-slate-700/50">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    <span class="text-xs font-medium text-slate-300">Sistema Operacional</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-500">
-                <h3 class="text-gray-500 text-sm uppercase">Total Processado</h3>
-                <p class="text-4xl font-bold text-gray-800" id="kpi-total">Carregando...</p>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24 pb-12">
+        
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-shadow duration-300">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="p-2 bg-blue-50 rounded-lg text-blue-600">
+                        <i class="ph-duotone ph-database text-2xl"></i>
+                    </div>
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total</span>
+                </div>
+                <p class="text-3xl font-extrabold text-slate-800" id="kpi-total">Carregando...</p>
+                <p class="text-xs text-slate-500 mt-1">Jobs processados</p>
             </div>
-            <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500">
-                <h3 class="text-gray-500 text-sm uppercase">Sucesso Absoluto</h3>
-                <p class="text-4xl font-bold text-gray-800" id="kpi-sucesso">...</p>
+
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-shadow duration-300">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="p-2 bg-green-50 rounded-lg text-green-600">
+                        <i class="ph-duotone ph-check-circle text-2xl"></i>
+                    </div>
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Sucesso</span>
+                </div>
+                <p class="text-3xl font-extrabold text-slate-800" id="kpi-percentual">...</p>
+                <p class="text-xs text-green-600 font-medium mt-1 flex items-center gap-1">
+                    <i class="ph-bold ph-trend-up"></i> Taxa de conversão
+                </p>
             </div>
-            <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-purple-500">
-                <h3 class="text-gray-500 text-sm uppercase">Tempo Médio</h3>
-                <p class="text-4xl font-bold text-gray-800" id="kpi-tempo">...</p>
+
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-shadow duration-300">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="p-2 bg-purple-50 rounded-lg text-purple-600">
+                        <i class="ph-duotone ph-clock text-2xl"></i>
+                    </div>
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Duração</span>
+                </div>
+                <p class="text-3xl font-extrabold text-slate-800" id="kpi-tempo">...</p>
+                <p class="text-xs text-slate-500 mt-1">Média por job</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-shadow duration-300">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="p-2 bg-orange-50 rounded-lg text-orange-600">
+                        <i class="ph-duotone ph-trophy text-2xl"></i>
+                    </div>
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Completos</span>
+                </div>
+                <p class="text-3xl font-extrabold text-slate-800" id="kpi-sucesso">...</p>
+                <p class="text-xs text-slate-500 mt-1">Finalizados com êxito</p>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-2 bg-white rounded-lg shadow-md overflow-hidden">
-                <div class="p-6 border-b border-gray-100">
-                    <h2 class="text-xl font-semibold text-gray-800">Últimos Jobs</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <i class="ph-duotone ph-chart-bar text-indigo-500"></i> Distribuição por Tamanho
+                    </h2>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-gray-50 text-gray-600 text-sm">
-                                <th class="p-4 border-b">Workspace</th>
-                                <th class="p-4 border-b">Tipo</th>
-                                <th class="p-4 border-b">Contatos</th>
-                                <th class="p-4 border-b">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabela-corpo" class="text-sm">
-                            </tbody>
-                    </table>
+                <div class="relative h-64">
+                    <canvas id="chartCategoria"></canvas>
                 </div>
             </div>
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <i class="ph-duotone ph-chart-pie-slice text-indigo-500"></i> Status dos Jobs
+                    </h2>
+                </div>
+                <div class="relative h-64 flex justify-center">
+                    <canvas id="chartStatus"></canvas>
+                </div>
+            </div>
+        </div>
 
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">🏆 Top Clientes</h2>
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden mb-8">
+            <div class="p-6 border-b border-slate-100 flex flex-wrap justify-between items-center gap-4 bg-white">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-800">Histórico de Enriquecimentos</h2>
+                    <p class="text-sm text-slate-500">Gerencie e filtre os processos recentes</p>
+                </div>
+                <div class="flex gap-3 flex-wrap">
+                    <div class="relative">
+                        <i class="ph-bold ph-funnel absolute left-3 top-2.5 text-slate-400"></i>
+                        <select id="filtro-status" class="pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium text-slate-600 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all appearance-none cursor-pointer hover:bg-slate-100">
+                            <option value="">Todos os Status</option>
+                            <option value="CONCLUIDO">Concluído</option>
+                            <option value="EM_PROCESSAMENTO">Em Processamento</option>
+                            <option value="FALHOU">Falhou</option>
+                            <option value="CANCELADO">Cancelado</option>
+                        </select>
+                    </div>
+                    <div class="relative">
+                        <i class="ph-bold ph-list-numbers absolute left-3 top-2.5 text-slate-400"></i>
+                        <select id="filtro-limite" class="pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium text-slate-600 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all appearance-none cursor-pointer hover:bg-slate-100">
+                            <option value="10">10 linhas</option>
+                            <option value="25">25 linhas</option>
+                            <option value="50" selected>50 linhas</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200">
+                            <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Workspace</th>
+                            <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Tipo</th>
+                            <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Volume</th>
+                            <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Categoria</th>
+                            <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                            <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Duração</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-corpo" class="text-sm divide-y divide-slate-100">
+                        </tbody>
+                </table>
+            </div>
+
+            <div class="p-4 border-t border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <span class="text-sm text-slate-500 font-medium" id="info-paginacao">Carregando...</span>
+                <div class="flex gap-2">
+                    <button id="btn-anterior" class="flex items-center gap-1 px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm" disabled>
+                        <i class="ph-bold ph-caret-left"></i> Anterior
+                    </button>
+                    <span class="flex items-center justify-center px-4 py-2 text-sm font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 rounded-lg" id="pagina-atual">1</span>
+                    <button id="btn-proximo" class="flex items-center gap-1 px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm">
+                        Próximo <i class="ph-bold ph-caret-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+            <h2 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+                <i class="ph-duotone ph-crown text-yellow-500"></i> Top 5 Workspaces
+            </h2>
+            <div class="relative h-64">
                 <canvas id="chartTopClientes"></canvas>
             </div>
         </div>
     </div>
 
     <script>
+        // Configuração Global de Fontes e Cores para o Chart.js para combinar com o tema
+        Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+        Chart.defaults.color = '#64748b';
+        Chart.defaults.scale.grid.color = '#f1f5f9';
+        
         const API_URL = 'http://localhost:3000/analytics';
+        let paginaAtual = 1;
+        let totalPaginas = 1;
+        let kpiData = null;
 
         // 1. Carregar KPIs
         async function loadKPIs() {
             try {
                 const res = await fetch(`${API_URL}/overview`);
-                const data = await res.json();
+                kpiData = await res.json();
                 
-                document.getElementById('kpi-total').innerText = data.total_jobs;
-                document.getElementById('kpi-sucesso').innerText = data.total_sucesso;
-                document.getElementById('kpi-tempo').innerText = data.tempo_medio + ' min';
+                document.getElementById('kpi-total').innerText = kpiData.total_jobs;
+                document.getElementById('kpi-sucesso').innerText = kpiData.total_sucesso;
+                document.getElementById('kpi-percentual').innerText = kpiData.percentual_sucesso + '%';
+                document.getElementById('kpi-tempo').innerText = kpiData.tempo_medio + ' min';
+
+                loadChartCategoria();
+                loadChartStatus();
             } catch (error) {
                 console.error("Erro KPIs:", error);
             }
         }
 
-        // 2. Carregar Tabela
+        // 2. Gráfico de Distribuição por Categoria
+        function loadChartCategoria() {
+            if (!kpiData) return;
+            
+            const ctx = document.getElementById('chartCategoria').getContext('2d');
+            
+            // Criação de gradiente para as barras
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, '#4f46e5'); // Indigo 600
+            gradient.addColorStop(1, '#818cf8'); // Indigo 400
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Pequeno', 'Médio', 'Grande', 'Muito Grande'],
+                    datasets: [{
+                        label: 'Quantidade',
+                        data: [
+                            kpiData.cat_pequeno,
+                            kpiData.cat_medio,
+                            kpiData.cat_grande,
+                            kpiData.cat_muito_grande
+                        ],
+                        backgroundColor: gradient,
+                        borderRadius: 6,
+                        barThickness: 30,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1e293b',
+                            padding: 12,
+                            cornerRadius: 8,
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, border: { display: false } },
+                        x: { grid: { display: false }, border: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // 3. Gráfico de Distribuição por Status
+        async function loadChartStatus() {
+            try {
+                const res = await fetch(`${API_URL}/enrichments?limit=1000`);
+                const response = await res.json();
+                const data = response.data || response;
+                
+                const statusCount = data.reduce((acc, row) => {
+                    acc[row.status_processamento] = (acc[row.status_processamento] || 0) + 1;
+                    return acc;
+                }, {});
+
+                const labels = Object.keys(statusCount);
+                
+                // Mapeamento de cores fixo
+                const colorMap = {
+                    'CONCLUIDO': '#10B981',      // Verde (Emerald 500)
+                    'EM_PROCESSAMENTO': '#3B82F6', // Azul (Blue 500)
+                    'FALHOU': '#94a3b8',         // Cinza (Slate 400) - Solicitado
+                    'CANCELADO': '#EF4444'       // Vermelho (Red 500)
+                };
+
+                const backgroundColors = labels.map(status => colorMap[status] || '#cbd5e1');
+
+                const ctx = document.getElementById('chartStatus').getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: Object.values(statusCount),
+                            backgroundColor: backgroundColors,
+                            borderWidth: 0,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { 
+                                position: 'right',
+                                labels: { usePointStyle: true, boxWidth: 8 }
+                            }
+                        },
+                        cutout: '75%'
+                    }
+                });
+            } catch (error) {
+                console.error("Erro gráfico status:", error);
+            }
+        }
+
+        // 4. Carregar Tabela com Paginação
         async function loadTable() {
             try {
-                const res = await fetch(`${API_URL}/enrichments`);
-                const data = await res.json();
+                const status = document.getElementById('filtro-status').value;
+                const limit = document.getElementById('filtro-limite').value;
+                
+                let url = `${API_URL}/enrichments?page=${paginaAtual}&limit=${limit}`;
+                if (status) url += `&status=${status}`;
+                
+                const res = await fetch(url);
+                const response = await res.json();
+                const data = response.data || response;
+                
+                if (response.meta) {
+                    totalPaginas = response.meta.total_pages;
+                    document.getElementById('info-paginacao').innerText = 
+                        `Mostrando ${data.length} de ${response.meta.total_items} registros`;
+                    document.getElementById('pagina-atual').innerText = 
+                        `${paginaAtual}`;
+                }
+                
+                document.getElementById('btn-anterior').disabled = paginaAtual <= 1;
+                document.getElementById('btn-proximo').disabled = paginaAtual >= totalPaginas;
                 
                 const tbody = document.getElementById('tabela-corpo');
                 tbody.innerHTML = data.map(row => `
-                    <tr class="hover:bg-gray-50 border-b last:border-0">
-                        <td class="p-3 font-medium text-gray-700">${row.nome_workspace}</td>
-                        <td class="p-3">
-                            <span class="px-2 py-1 rounded-full text-xs ${row.tipo_contato === 'COMPANY' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}">
+                    <tr class="hover:bg-slate-50 transition-colors group">
+                        <td class="p-4 font-semibold text-slate-700 group-hover:text-indigo-600 transition-colors">
+                            ${row.nome_workspace}
+                        </td>
+                        <td class="p-4">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${row.tipo_contato === 'EMPRESA' ? 'bg-indigo-50 text-indigo-700 border border-indigo-100' : 'bg-teal-50 text-teal-700 border border-teal-100'}">
+                                ${row.tipo_contato === 'EMPRESA' ? '<i class="ph-bold ph-building mr-1"></i>' : '<i class="ph-bold ph-user mr-1"></i>'}
                                 ${row.tipo_contato}
                             </span>
                         </td>
-                        <td class="p-3 text-gray-600">${row.total_contatos}</td>
-                        <td class="p-3">
-                            ${row.processamento_sucesso 
-                                ? '<span class="text-green-600 font-bold">✓ Sucesso</span>' 
-                                : '<span class="text-red-500">✕ Falha</span>'}
+                        <td class="p-4 text-slate-600 font-medium">${row.total_contatos.toLocaleString()}</td>
+                        <td class="p-4">
+                            <span class="text-xs font-semibold px-2 py-1 rounded bg-slate-100 text-slate-600 border border-slate-200">
+                                ${row.categoria_tamanho_job}
+                            </span>
+                        </td>
+                        <td class="p-4">
+                            ${getStatusBadge(row.status_processamento)}
+                        </td>
+                        <td class="p-4 text-slate-500 text-sm">
+                            <span class="flex items-center gap-1"><i class="ph-fill ph-clock text-slate-400"></i> ${row.duracao_processamento_minutos} min</span>
                         </td>
                     </tr>
                 `).join('');
@@ -103,7 +405,17 @@
             }
         }
 
-        // 3. Carregar Gráfico (Bônus)
+        function getStatusBadge(status) {
+            const badges = {
+                'CONCLUIDO': '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>Concluído</span>',
+                'EM_PROCESSAMENTO': '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100"><span class="w-1.5 h-1.5 rounded-full bg-blue-500 mr-1.5 animate-pulse"></span>Processando</span>',
+                'FALHOU': '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-100"><span class="w-1.5 h-1.5 rounded-full bg-red-500 mr-1.5"></span>Falhou</span>',
+                'CANCELADO': '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-100"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5"></span>Cancelado</span>'
+            };
+            return badges[status] || status;
+        }
+
+        // 5. Carregar Gráfico Top Clientes
         async function loadChart() {
             try {
                 const res = await fetch(`${API_URL}/workspaces/top`);
@@ -111,19 +423,59 @@
 
                 const ctx = document.getElementById('chartTopClientes').getContext('2d');
                 new Chart(ctx, {
-                    type: 'doughnut',
+                    type: 'bar',
                     data: {
                         labels: data.map(d => d.nome_workspace),
                         datasets: [{
+                            label: 'Total de Enriquecimentos',
                             data: data.map(d => d.total_enrichments),
-                            backgroundColor: ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#EF4444']
+                            backgroundColor: ['#4f46e5', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444'],
+                            borderRadius: 4,
+                            barThickness: 20
                         }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: { grid: { display: false } },
+                            y: { grid: { display: false }, border: { display: false } }
+                        }
                     }
                 });
             } catch (error) {
                 console.error("Erro Gráfico:", error);
             }
         }
+
+        // Event Listeners (Mantidos originais)
+        document.getElementById('btn-anterior').addEventListener('click', () => {
+            if (paginaAtual > 1) {
+                paginaAtual--;
+                loadTable();
+            }
+        });
+
+        document.getElementById('btn-proximo').addEventListener('click', () => {
+            if (paginaAtual < totalPaginas) {
+                paginaAtual++;
+                loadTable();
+            }
+        });
+
+        document.getElementById('filtro-status').addEventListener('change', () => {
+            paginaAtual = 1;
+            loadTable();
+        });
+
+        document.getElementById('filtro-limite').addEventListener('change', () => {
+            paginaAtual = 1;
+            loadTable();
+        });
 
         // Iniciar tudo
         loadKPIs();
