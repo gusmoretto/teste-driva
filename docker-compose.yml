@@ -1,6 +1,31 @@
 version: '3.8'
 
 services:
+  # --- API Node.js ---
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: driva_api
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - API_SECRET_KEY=driva_test_key_abc123xyz789
+      - DB_USER=user
+      - DB_PASS=password
+      - DB_NAME=driva_db
+      - DB_HOST=postgres
+      - DB_PORT=5432
+    volumes:
+      - ./frontend:/app/frontend:ro
+    networks:
+      - driva_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   # --- Banco de Dados ---
   postgres:
     image: postgres:15-alpine
