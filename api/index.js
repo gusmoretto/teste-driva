@@ -21,9 +21,17 @@ app.use('/people/v1', sourceRoutes);
 app.use('/analytics', analyticsRoutes);
 
 
-// Front-end
-app.use(express.static(path.join(__dirname, '../frontend')));
+// Front-end (suporta ambiente local e Docker)
+const frontendPath = process.env.NODE_ENV === 'production' 
+    ? path.join(__dirname, 'frontend')  // Docker: /app/frontend (volume)
+    : path.join(__dirname, '../frontend'); // Local: ../frontend
+app.use(express.static(frontendPath));
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(frontendPath, 'index.html'));
+});
 
 app.listen(port,'0.0.0.0', () => {
     console.log(`API rodando na porta ${port}`);
+    console.log(`Frontend disponível em: http://localhost:${port}`);
 });
