@@ -51,6 +51,9 @@
         -192
       ],
       "id": "eaa41613-6d1c-4631-8b5a-ecdf04b3c8eb",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
       "credentials": {
         "httpHeaderAuth": {
           "id": "0m76XKRvQzcwSGBE",
@@ -155,7 +158,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const response = $('Fetch API').first().json;\nconst meta = response.meta || {};\nconst current = meta.current_page || 1;\nconst total = meta.total_pages || 1;\nreturn { json: { page: current + 1, limit: 50, hasMore: current < total } };"
+        "jsCode": "const response = $('Fetch API').last().json;\nconst meta = response.meta || {};\nconst current = meta.current_page || 1;\nconst total = meta.total_pages || 1;\n\n// Add 2 second delay to prevent rate limiting\nawait new Promise(resolve => setTimeout(resolve, 2000));\n\nreturn { json: { page: current + 1, limit: 50, hasMore: current < total } };"
       },
       "name": "Check Pag",
       "type": "n8n-nodes-base.code",
