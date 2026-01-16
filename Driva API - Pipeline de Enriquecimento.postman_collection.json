@@ -1,0 +1,659 @@
+{
+	"info": {
+		"_postman_id": "c2ee7ccf-b0de-4d50-a7f7-08a1cf6e738a",
+		"name": "Driva API - Pipeline de Enriquecimento",
+		"description": "Coleção de endpoints da API do Pipeline de Enriquecimento Driva.\n\n## Grupos de Endpoints\n\n1. **Source (Fonte)** - Simula a API de enriquecimentos consumida pelo n8n\n2. **Analytics** - Endpoints de leitura da camada Gold para o dashboard\n\n## Autenticação\n\nO endpoint de fonte requer autenticação via API Key:\n- Header: `Authorization: Bearer driva_test_key_abc123xyz789`",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "50284159",
+		"_collection_link": "https://gustavomorettodias31-9028952.postman.co/workspace/Gustavo-Moretto-Dias's-Workspac~87d71239-efa9-4197-82e0-76fff81da52f/collection/50284159-c2ee7ccf-b0de-4d50-a7f7-08a1cf6e738a?action=share&source=collection_link&creator=50284159"
+	},
+	"item": [
+		{
+			"name": "Source (Fonte de Dados)",
+			"item": [
+				{
+					"name": "Listar Enrichments (Paginado)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{api_key}}",
+								"description": "API Key de autenticação",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/people/v1/enrichments?page=1&limit=50",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"people",
+								"v1",
+								"enrichments"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Número da página (default: 1)"
+								},
+								{
+									"key": "limit",
+									"value": "50",
+									"description": "Itens por página (default: 50, max: 100)"
+								}
+							]
+						},
+						"description": "Retorna uma lista paginada de enriquecimentos da tabela de seed.\n\n**Autenticação:** Obrigatória\n\n**Rate Limiting:** 10% de chance de retornar 429 Too Many Requests (simulação)\n\n**Exemplo de Resposta:**\n```json\n{\n  \"meta\": {\n    \"current_page\": 1,\n    \"items_per_page\": 50,\n    \"total_items\": 5000,\n    \"total_pages\": 100\n  },\n  \"data\": [\n    {\n      \"id\": \"f47ac10b-58cc-4372-a567-0e02b2c3d479\",\n      \"id_workspace\": \"e6bb64bf-46e4-410d-8406-c61e267ea607\",\n      \"workspace_name\": \"Tech Solutions Corp\",\n      \"total_contacts\": 1500,\n      \"contact_type\": \"COMPANY\",\n      \"status\": \"COMPLETED\",\n      \"created_at\": \"2025-11-15T14:30:00.000Z\",\n      \"updated_at\": \"2025-11-15T14:35:22.000Z\"\n    }\n  ]\n}\n```"
+					},
+					"response": [
+						{
+							"name": "Sucesso (200 OK)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{api_key}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/people/v1/enrichments?page=1&limit=50",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"people",
+										"v1",
+										"enrichments"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "50"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"meta\": {\n    \"current_page\": 1,\n    \"items_per_page\": 50,\n    \"total_items\": 5000,\n    \"total_pages\": 100\n  },\n  \"data\": [\n    {\n      \"id\": \"f47ac10b-58cc-4372-a567-0e02b2c3d479\",\n      \"id_workspace\": \"e6bb64bf-46e4-410d-8406-c61e267ea607\",\n      \"workspace_name\": \"Tech Solutions Corp\",\n      \"total_contacts\": 1500,\n      \"contact_type\": \"COMPANY\",\n      \"status\": \"COMPLETED\",\n      \"created_at\": \"2025-11-15T14:30:00.000Z\",\n      \"updated_at\": \"2025-11-15T14:35:22.000Z\"\n    }\n  ]\n}"
+						},
+						{
+							"name": "Não Autorizado (401)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/people/v1/enrichments",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"people",
+										"v1",
+										"enrichments"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"error\": \"Unauthorized\"\n}"
+						},
+						{
+							"name": "Rate Limit (429)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{api_key}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/people/v1/enrichments",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"people",
+										"v1",
+										"enrichments"
+									]
+								}
+							},
+							"status": "Too Many Requests",
+							"code": 429,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"error\": \"Too Many Requests\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Listar Enrichments - Página 2",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/people/v1/enrichments?page=2&limit=50",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"people",
+								"v1",
+								"enrichments"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2"
+								},
+								{
+									"key": "limit",
+									"value": "50"
+								}
+							]
+						},
+						"description": "Exemplo de requisição para a segunda página de enrichments."
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Enrichments - Limite Máximo",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/people/v1/enrichments?page=1&limit=100",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"people",
+								"v1",
+								"enrichments"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "100"
+								}
+							]
+						},
+						"description": "Exemplo de requisição com limite máximo de 100 itens por página."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints que simulam a API interna de enriquecimentos, consumidos pelo workflow do n8n."
+		},
+		{
+			"name": "Analytics (Dashboard)",
+			"item": [
+				{
+					"name": "Overview - KPIs do Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/analytics/overview",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"analytics",
+								"overview"
+							]
+						},
+						"description": "Retorna os KPIs gerais para o dashboard, baseados na camada Gold.\n\n**Autenticação:** Não requerida\n\n**Campos Retornados:**\n- `total_jobs`: Total de jobs de enriquecimento\n- `total_sucesso`: Total de jobs com sucesso\n- `percentual_sucesso`: Percentual de sucesso (0-100)\n- `tempo_medio`: Tempo médio de processamento em minutos\n- `cat_pequeno`: Jobs com < 100 contatos\n- `cat_medio`: Jobs com 100-500 contatos\n- `cat_grande`: Jobs com 501-1000 contatos\n- `cat_muito_grande`: Jobs com > 1000 contatos"
+					},
+					"response": [
+						{
+							"name": "Sucesso (200 OK)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/analytics/overview",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"analytics",
+										"overview"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"total_jobs\": \"5000\",\n  \"total_sucesso\": \"3000\",\n  \"percentual_sucesso\": \"60.00\",\n  \"tempo_medio\": \"45.32\",\n  \"cat_pequeno\": \"500\",\n  \"cat_medio\": \"1500\",\n  \"cat_grande\": \"1200\",\n  \"cat_muito_grande\": \"1800\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Enrichments - Lista Paginada",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/analytics/enrichments?page=1&limit=50",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"analytics",
+								"enrichments"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Número da página (default: 1)"
+								},
+								{
+									"key": "limit",
+									"value": "50",
+									"description": "Itens por página (default: 50, max: 100)"
+								}
+							]
+						},
+						"description": "Retorna uma lista paginada de enriquecimentos da camada Gold.\n\n**Autenticação:** Não requerida\n\n**Filtros Disponíveis:**\n- `id_workspace`: UUID do workspace\n- `status`: Status do processamento (CONCLUIDO, EM_PROCESSAMENTO, FALHOU, CANCELADO)\n- `data_inicio`: Data inicial (ISO 8601)\n- `data_fim`: Data final (ISO 8601)"
+					},
+					"response": [
+						{
+							"name": "Sucesso (200 OK)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/analytics/enrichments?page=1&limit=50",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"analytics",
+										"enrichments"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "50"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"meta\": {\n    \"current_page\": 1,\n    \"items_per_page\": 50,\n    \"total_items\": 5000,\n    \"total_pages\": 100\n  },\n  \"data\": [\n    {\n      \"id_enriquecimento\": \"f47ac10b-58cc-4372-a567-0e02b2c3d479\",\n      \"id_workspace\": \"e6bb64bf-46e4-410d-8406-c61e267ea607\",\n      \"nome_workspace\": \"Tech Solutions Corp\",\n      \"total_contatos\": 1500,\n      \"tipo_contato\": \"EMPRESA\",\n      \"status_processamento\": \"CONCLUIDO\",\n      \"data_criacao\": \"2025-11-15T14:30:00.000Z\",\n      \"data_atualizacao\": \"2025-11-15T14:35:22.000Z\",\n      \"duracao_processamento_minutos\": 5.37,\n      \"tempo_por_contato_minutos\": 0.0036,\n      \"processamento_sucesso\": true,\n      \"categoria_tamanho_job\": \"MUITO_GRANDE\",\n      \"necessita_reprocessamento\": false,\n      \"data_atualizacao_dw\": \"2025-11-15T15:00:00.000Z\"\n    }\n  ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Enrichments - Filtro por Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/analytics/enrichments?status=CONCLUIDO&page=1&limit=20",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"analytics",
+								"enrichments"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "CONCLUIDO",
+									"description": "Filtrar por status: CONCLUIDO, EM_PROCESSAMENTO, FALHOU, CANCELADO"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Exemplo de requisição filtrando apenas enrichments com status CONCLUIDO."
+					},
+					"response": []
+				},
+				{
+					"name": "Enrichments - Filtro por Período",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/analytics/enrichments?data_inicio=2025-01-01&data_fim=2025-01-15&page=1&limit=50",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"analytics",
+								"enrichments"
+							],
+							"query": [
+								{
+									"key": "data_inicio",
+									"value": "2025-01-01",
+									"description": "Data inicial (formato: YYYY-MM-DD)"
+								},
+								{
+									"key": "data_fim",
+									"value": "2025-01-15",
+									"description": "Data final (formato: YYYY-MM-DD)"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "50"
+								}
+							]
+						},
+						"description": "Exemplo de requisição filtrando enrichments por período de datas."
+					},
+					"response": []
+				},
+				{
+					"name": "Enrichments - Filtro por Workspace",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/analytics/enrichments?id_workspace=a13d675f-854c-4168-83de-1638bb592ac7&page=1&limit=50",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"analytics",
+								"enrichments"
+							],
+							"query": [
+								{
+									"key": "id_workspace",
+									"value": "a13d675f-854c-4168-83de-1638bb592ac7",
+									"description": "UUID do workspace"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "50"
+								}
+							]
+						},
+						"description": "Exemplo de requisição filtrando enrichments por workspace específico."
+					},
+					"response": []
+				},
+				{
+					"name": "Enrichments - Filtros Combinados",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{api_key}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/analytics/enrichments?status=FALHOU&data_inicio=2025-01-01&data_fim=2025-12-31&page=1&limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"analytics",
+								"enrichments"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "FALHOU"
+								},
+								{
+									"key": "data_inicio",
+									"value": "2025-01-01"
+								},
+								{
+									"key": "data_fim",
+									"value": "2025-12-31"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Exemplo de requisição combinando múltiplos filtros."
+					},
+					"response": []
+				},
+				{
+					"name": "Top Workspaces",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/analytics/workspaces/top",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"analytics",
+								"workspaces",
+								"top"
+							]
+						},
+						"description": "Retorna o ranking dos top 5 workspaces por volume de enriquecimentos.\n\n**Autenticação:** Não requerida\n\n**Campos Retornados:**\n- `nome_workspace`: Nome do workspace\n- `total_enrichments`: Total de enriquecimentos realizados"
+					},
+					"response": [
+						{
+							"name": "Sucesso (200 OK)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/analytics/workspaces/top",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"analytics",
+										"workspaces",
+										"top"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "[\n  {\n    \"nome_workspace\": \"Tech Solutions Corp\",\n    \"total_enrichments\": \"150\"\n  },\n  {\n    \"nome_workspace\": \"Data Analytics Inc\",\n    \"total_enrichments\": \"120\"\n  },\n  {\n    \"nome_workspace\": \"Marketing Pro LTDA\",\n    \"total_enrichments\": \"95\"\n  },\n  {\n    \"nome_workspace\": \"Sales Force Brasil\",\n    \"total_enrichments\": \"80\"\n  },\n  {\n    \"nome_workspace\": \"Digital Growth Co\",\n    \"total_enrichments\": \"65\"\n  }\n]"
+						}
+					]
+				}
+			],
+			"description": "Endpoints de leitura da camada Gold para o dashboard do time de Visibilidade."
+		},
+		{
+			"name": "Health Check",
+			"item": [
+				{
+					"name": "API Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								""
+							]
+						},
+						"description": "Verifica se a API está respondendo."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para verificar a saúde da API."
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "api_key",
+			"value": "driva_test_key_abc123xyz789",
+			"type": "string"
+		}
+	]
+}
