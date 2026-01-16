@@ -1,0 +1,134 @@
+{
+  "name": "3. Orquestrador (Scheduler)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1e64a142-afd9-4207-b57a-02c9172351cc"
+    },
+    {
+      "parameters": {
+        "workflowId": "SyTbq8vKabpX54wSRUqq2",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "name": "Run Ingestão",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "dfd4f702-4a41-482c-8711-f5e0c4238099"
+    },
+    {
+      "parameters": {
+        "workflowId": "piSDU5jm_IdSihi8HbDD9",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "name": "Run Processamento",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1,
+      "position": [
+        448,
+        0
+      ],
+      "id": "efd5447c-0a98-4c78-80e1-fb46bc5af305",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "jsCode": "console.log('Pipeline finished successfully at ' + new Date());\nreturn { json: { status: 'success', finished_at: new Date() } };"
+      },
+      "name": "Log Success",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        672,
+        0
+      ],
+      "id": "e576d3bb-154d-47f3-aff5-382c9c2cfb54"
+    }
+  ],
+  "pinData": {
+    "Schedule Trigger": [
+      {
+        "json": {
+          "name": "First item",
+          "code": 1
+        }
+      },
+      {
+        "json": {
+          "name": "Second item",
+          "code": 2
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Run Ingestão": {
+      "main": [
+        [
+          {
+            "node": "Run Processamento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Processamento": {
+      "main": [
+        [
+          {
+            "node": "Log Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Run Ingestão",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "197e9d0c-ffe8-4d67-8991-e2051ff9112a",
+  "meta": {
+    "instanceId": "d31b1eb3488f4cff7f3867f7373743af00c231a261ad07ef6fd27bdbe5769c51"
+  },
+  "id": "lfX5K_2_6Bc2DRvzQd0ll",
+  "tags": []
+}

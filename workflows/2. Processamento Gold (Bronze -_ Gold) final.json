@@ -1,0 +1,162 @@
+{
+  "name": "2. Processamento Gold (Bronze -> Gold)",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Start Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        48,
+        -96
+      ],
+      "id": "1c36fffc-bc90-4e11-825a-99c16ce64b95"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT COALESCE(MAX(data_atualizacao_dw), '1970-01-01') as last_processed FROM gold_enrichments;",
+        "options": {}
+      },
+      "name": "Get Last Processed",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.1,
+      "position": [
+        256,
+        -96
+      ],
+      "id": "e9e8f9d4-3dd9-420a-92cc-04b02f2ac794",
+      "credentials": {
+        "postgres": {
+          "id": "FUi16LrPFeOzLkus",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM bronze_enrichments WHERE dw_updated_at > '{{ $json.last_processed }}';",
+        "options": {}
+      },
+      "name": "Read Bronze",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.1,
+      "position": [
+        480,
+        -96
+      ],
+      "id": "7295d5e1-a92d-4629-887b-b810dd357c44",
+      "credentials": {
+        "postgres": {
+          "id": "FUi16LrPFeOzLkus",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst results = [];\n\nfor (const item of items) {\n  const row = item.json;\n  let data = row.original_data;\n  \n  if (typeof data === 'string') {\n    try {\n      data = JSON.parse(data);\n    } catch (e) {\n      data = {};\n    }\n  }\n  data = data || {};\n\n  // Use row.id directly if possible, otherwise fallback to data.id\n  const enrichmentId = row.id || data.id;\n  \n  if (!enrichmentId) continue; // Skip if no ID found\n  \n  // Parse timestamps\n  const createdAt = new Date(data.created_at || new Date());\n  const updatedAt = new Date(data.updated_at || new Date());\n  \n  // Calculations\n  const duracao = (updatedAt - createdAt) / 60000; // minutes\n  const total_contatos = data.total_contacts || 0;\n  const tempo_por_contato = total_contatos > 0 ? duracao / total_contatos : 0;\n  \n  let categoria = 'PEQUENO';\n  if (total_contatos > 1000) categoria = 'MUITO_GRANDE';\n  else if (total_contatos > 500) categoria = 'GRANDE';\n  else if (total_contatos > 100) categoria = 'MEDIO';\n  \n  const mapStatus = {\n    'PROCESSING': 'EM_PROCESSAMENTO',\n    'COMPLETED': 'CONCLUIDO',\n    'FAILED': 'FALHOU',\n    'CANCELED': 'CANCELADO'\n  };\n  \n  const mapType = {\n    'PERSON': 'PESSOA',\n    'COMPANY': 'EMPRESA'\n  };\n  \n  const status_proc = mapStatus[data.status] || data.status;\n  \n  results.push({\n      id_enriquecimento: enrichmentId,\n      id_workspace: data.id_workspace,\n      nome_workspace: data.workspace_name,\n      total_contatos: total_contatos,\n      tipo_contato: mapType[data.contact_type] || data.contact_type,\n      status_processamento: status_proc,\n      data_criacao: data.created_at || new Date(),\n      data_atualizacao: data.updated_at || new Date(),\n      duracao_processamento_minutos: duracao,\n      tempo_por_contato_minutos: tempo_por_contato,\n      processamento_sucesso: status_proc === 'CONCLUIDO',\n      categoria_tamanho_job: categoria,\n      necessita_reprocessamento: ['FALHOU', 'CANCELADO'].includes(status_proc),\n      data_atualizacao_dw: new Date().toISOString()\n  });\n}\n\nreturn results.map(r => ({ json: r }));"
+      },
+      "name": "Transform Bronze to Gold",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        704,
+        -96
+      ],
+      "id": "db88ed0d-171e-463d-aaf1-1ac823d7a4cd"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "gold_enrichments",
+          "mode": "list",
+          "cachedResultName": "gold_enrichments"
+        },
+        "columnToMatchOn": "id_enriquecimento",
+        "options": {}
+      },
+      "name": "Upsert Gold",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.1,
+      "position": [
+        928,
+        -96
+      ],
+      "id": "71ba8bc2-eb43-4c21-8cf0-57900cc461be",
+      "credentials": {
+        "postgres": {
+          "id": "FUi16LrPFeOzLkus",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Start Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Last Processed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Last Processed": {
+      "main": [
+        [
+          {
+            "node": "Read Bronze",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Bronze": {
+      "main": [
+        [
+          {
+            "node": "Transform Bronze to Gold",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Bronze to Gold": {
+      "main": [
+        [
+          {
+            "node": "Upsert Gold",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "82fb5886-177f-48e6-831f-3693937de889",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d31b1eb3488f4cff7f3867f7373743af00c231a261ad07ef6fd27bdbe5769c51"
+  },
+  "id": "piSDU5jm_IdSihi8HbDD9",
+  "tags": []
+}

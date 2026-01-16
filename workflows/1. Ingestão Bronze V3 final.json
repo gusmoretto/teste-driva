@@ -1,0 +1,313 @@
+{
+  "name": "1. Ingestão Bronze V3",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Manual",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        3008,
+        -256
+      ],
+      "id": "2e0f51d5-9630-4aa8-931d-c40f56554dfa"
+    },
+    {
+      "parameters": {},
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        3008,
+        -64
+      ],
+      "id": "8da98e99-90fb-4577-a7de-474f8f28ab41"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { page: 1, limit: 50, hasMore: true } }];"
+      },
+      "name": "Init",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        3232,
+        -192
+      ],
+      "id": "dc7f8d0e-5d37-413a-9194-b7a332d2c8fb"
+    },
+    {
+      "parameters": {
+        "url": "=http://api:3000/people/v1/enrichments?page={{ $json.page }}&limit=50",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "name": "Fetch API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        3456,
+        -192
+      ],
+      "id": "eaa41613-6d1c-4631-8b5a-ecdf04b3c8eb",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "0m76XKRvQzcwSGBE",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nconst data = response.data || [];\nreturn data.map(item => ({\n  json: {\n    id: item.id,\n    original_data: item,\n    dw_updated_at: new Date().toISOString()\n  }\n}));"
+      },
+      "name": "Split",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        3680,
+        -192
+      ],
+      "id": "00803d42-7c8f-442d-82b7-be1b327e073d"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "bronze_enrichments",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id }}",
+            "original_data": "={{ $json.original_data }}",
+            "dw_updated_at": "={{ $json.dw_updated_at }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": true,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "original_data",
+              "displayName": "original_data",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "dw_ingested_at",
+              "displayName": "dw_ingested_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "dw_updated_at",
+              "displayName": "dw_updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "name": "Upsert Bronze",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        3888,
+        -192
+      ],
+      "id": "524a1475-7147-4c79-aa45-f5335b8ae236",
+      "credentials": {
+        "postgres": {
+          "id": "FUi16LrPFeOzLkus",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $('Fetch API').first().json;\nconst meta = response.meta || {};\nconst current = meta.current_page || 1;\nconst total = meta.total_pages || 1;\nreturn { json: { page: current + 1, limit: 50, hasMore: current < total } };"
+      },
+      "name": "Check Pag",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        4112,
+        -192
+      ],
+      "id": "83507448-cea7-4374-b555-4bad7cafb9dc"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.hasMore }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "If More",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        4336,
+        -192
+      ],
+      "id": "4784c176-7532-4107-bdb7-293d0d6b706d"
+    },
+    {
+      "parameters": {
+        "jsCode": "return { json: { status: 'done' } };"
+      },
+      "name": "Done",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        4560,
+        -96
+      ],
+      "id": "66b70bea-0f0c-475a-b53c-3cc764fef576"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Manual": {
+      "main": [
+        [
+          {
+            "node": "Init",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Init",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Init": {
+      "main": [
+        [
+          {
+            "node": "Fetch API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch API": {
+      "main": [
+        [
+          {
+            "node": "Split",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split": {
+      "main": [
+        [
+          {
+            "node": "Upsert Bronze",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Bronze": {
+      "main": [
+        [
+          {
+            "node": "Check Pag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Pag": {
+      "main": [
+        [
+          {
+            "node": "If More",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If More": {
+      "main": [
+        [
+          {
+            "node": "Fetch API",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Done",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "2bd757ba-e5b5-480a-bb7e-82fdb456c0e7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d31b1eb3488f4cff7f3867f7373743af00c231a261ad07ef6fd27bdbe5769c51"
+  },
+  "id": "SyTbq8vKabpX54wSRUqq2",
+  "tags": []
+}
